@@ -131,7 +131,8 @@ class Logger extends Elem {
       fontFamily: '"Ubuntu Mono", sans-serif',
       border: '1px solid #000',
       borderRadius: '2px',
-      margin: '0'
+      margin: '0',
+      minHeight: '19px'
     };
     
     super(opt);

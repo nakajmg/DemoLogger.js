@@ -207,7 +207,8 @@ var Logger = (function (Elem) {
       fontFamily: "\"Ubuntu Mono\", sans-serif",
       border: "1px solid #000",
       borderRadius: "2px",
-      margin: "0"
+      margin: "0",
+      minHeight: "19px"
     };
 
     _get(Object.getPrototypeOf(Logger.prototype), "constructor", this).call(this, opt);
