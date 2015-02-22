@@ -17,7 +17,13 @@ name =
   js: "demologger.js"
   
 order = [
+    "replacelog"
     "Elem"
+    "Frame"
+    "Btn"
+    "Label"
+    "Logger"
+    "DemoLogger"
   ].map (filename) ->
     "#{src.js}#{filename}.es6.js"
 
@@ -32,11 +38,11 @@ gulp.task "concat", ->
 gulp.task "babel", ["concat"], ->
   gulp.src "#{dist}#{name.es6}"
     .pipe plumber {errorHandler: notify.onError("<%= error.message %>") }
-    .pipe do babel
-    .pipe wrapper
-      header: "(function()) {\n"
-      footer: "\n})();"
+    .pipe babel({ blacklist: ["useStrict"] })
     .pipe rename "#{name.js}"
+    .pipe wrapper
+      header: "(function() {\n"
+      footer: "\n})();"
     .pipe gulp.dest dist
   
 gulp.task "default", ->
