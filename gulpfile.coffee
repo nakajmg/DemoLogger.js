@@ -3,34 +3,43 @@ babel = require "gulp-babel"
 concat = require "gulp-concat"
 rename = require "gulp-rename"
 plumber = require "gulp-plumber"
-notify = require "gulp-notify"
 wrapper = require "gulp-wrapper"
+notify = require "gulp-notify"
+watch = require "gulp-watch"
+run = require "run-sequence"
 bs = require "browser-sync"
 
 src =
-  js: "src/js/" 
+  js: "./src/js/"
 
+dist = "dist/js/"
+
+name =
+  es6: "demoloader.es6.js"
+  js: "demoloader.js"
+  
 order = [
-  "logger.es6.js"
-].map (name) ->
-  "#{src.js}#{name}"
+    "Elem"
+  ].map (filename) ->
+    "#{src.js}#{filename}.es6.js"
 
-outputfilename = "demoloader"
+order.push "!#{src.js}#{name.es6}"
 
 gulp.task "concat", ->
   gulp.src order
-    .pipe concat "#{outputfilename}.es6.js"
-    .pipe gulp.dest "src/js"
+    .pipe plumber {errorHandler: notify.onError("<%= error.message %>") }
+    .pipe concat "#{name.es6}"
+    .pipe gulp.dest dist
 
 gulp.task "babel", ["concat"], ->
-  gulp.src "src/js/#{outputfilename}.es6.js"
+  gulp.src "#{dist}#{name.es6}"
     .pipe plumber {errorHandler: notify.onError("<%= error.message %>") }
     .pipe do babel
     .pipe wrapper
       header: "(function()) {\n"
       footer: "\n})();"
-    .pipe rename "#{outputfilename}.js"
-    .pipe gulp.dest "dist/js"
+    .pipe rename "#{name.js}"
+    .pipe gulp.dest dist
   
 gulp.task "default", ->
   bs.init
@@ -39,4 +48,5 @@ gulp.task "default", ->
       directory: false
     notify: false
     host: "localhost"
-  gulp.watch ["src/js/**/*.es6.js"], ["babel", bs.reload]
+  
+  gulp.watch ["src/js/**/*.es6.js", "!#{src.js}#{name.es6}"], ["babel", bs.reload]
