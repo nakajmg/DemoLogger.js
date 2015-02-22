@@ -1,16 +1,15 @@
 var replacelog = (el) => {
   console.log = (...args) => {
     var logs = [];
-    args.forEach((log) => {
-        if (typeof log == 'object') {
-          logs.push((JSON && JSON.stringify ? JSON.stringify(log) : log));
-        }
-        else {
-          logs.push(log);
-        }
-        el.innerHTML += logs.join(' ') + '<br>';
+    for (var i = 0, leng = args.length; i < leng; i++) {
+      if (typeof args[i] == 'object') {
+        logs.push((JSON && JSON.stringify ? JSON.stringify(args[i]) : args[i]));
       }
-    );
+      else {
+        logs.push(args[i]);
+      }
+    }
+    el.innerHTML += logs.join(' ') + '<br>';
   }
 };
 

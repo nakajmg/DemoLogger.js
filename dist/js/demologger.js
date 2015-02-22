@@ -14,14 +14,14 @@ var replacelog = function (el) {
     }
 
     var logs = [];
-    args.forEach(function (log) {
-      if (typeof log == "object") {
-        logs.push(JSON && JSON.stringify ? JSON.stringify(log) : log);
+    for (var i = 0, leng = args.length; i < leng; i++) {
+      if (typeof args[i] == "object") {
+        logs.push(JSON && JSON.stringify ? JSON.stringify(args[i]) : args[i]);
       } else {
-        logs.push(log);
+        logs.push(args[i]);
       }
-      el.innerHTML += logs.join(" ") + "<br>";
-    });
+    }
+    el.innerHTML += logs.join(" ") + "<br>";
   };
 };
 
