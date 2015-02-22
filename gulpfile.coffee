@@ -5,8 +5,6 @@ rename = require "gulp-rename"
 plumber = require "gulp-plumber"
 wrapper = require "gulp-wrapper"
 notify = require "gulp-notify"
-watch = require "gulp-watch"
-run = require "run-sequence"
 bs = require "browser-sync"
 
 src =
@@ -15,8 +13,8 @@ src =
 dist = "dist/js/"
 
 name =
-  es6: "demoloader.es6.js"
-  js: "demoloader.js"
+  es6: "demologger.es6.js"
+  js: "demologger.js"
   
 order = [
     "Elem"
