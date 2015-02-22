@@ -5,6 +5,7 @@ rename = require "gulp-rename"
 plumber = require "gulp-plumber"
 wrapper = require "gulp-wrapper"
 notify = require "gulp-notify"
+uglify = require "gulp-uglify"
 bs = require "browser-sync"
 
 src =
@@ -15,6 +16,7 @@ dist = "dist/js/"
 name =
   es6: "demologger.es6.js"
   js: "demologger.js"
+  min: "demologger.min.js"
   
 order = [
     "replacelog"
@@ -43,6 +45,12 @@ gulp.task "babel", ["concat"], ->
     .pipe wrapper
       header: "(function() {\n"
       footer: "\n})();"
+    .pipe gulp.dest dist
+
+gulp.task "build", ["babel"], ->
+  gulp.src "#{dist}#{name.js}"
+    .pipe do uglify
+    .pipe rename name.min
     .pipe gulp.dest dist
   
 gulp.task "default", ->
