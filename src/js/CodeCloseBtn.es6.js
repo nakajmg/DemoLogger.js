@@ -12,7 +12,9 @@ class CodeCloseBtn extends Btn {
       right: '0px',
       top: '0px',
       fontSize: '10px',
-      opacity: '0.5'
+      opacity: '0.5',
+      padding: '0 5px',
+      lineHeight: '20px'
     };
     this.applyStyle();
     this._addEvent();
