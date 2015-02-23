@@ -11,9 +11,17 @@ class Code extends Elem {
       overflowX: 'scroll',
       fontSize: '12px',
       fontFamily: 'monospace',
-      letterSpacing: '0.1em'
+      letterSpacing: '0.1em',
+      position: 'relative'
     }
     super(opt);
+    this._initElement();
+  }
+  _initElement() {
+    this.close = new CodeCloseBtn({
+      fn: this.hide.bind(this)
+    });
+    this.add([this.close]);
   }
   show() {
     this.el.style.display = 'block';
