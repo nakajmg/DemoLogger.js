@@ -13,32 +13,21 @@
   </style>
 </head>
 <body>
-<pre class="code">
-function test() {
-  console.log("call test function");
-}
-function run() {
-  console.log("call run function");
-}
-console.log("hoge1", "hoge");
-
-demoLogger.set({
-  test: test,
-  run: run
-});
-</pre>
   <script src="js/demologger.js"></script>
   <script>
-    function test() {
-      console.log("call test function");
+    function func1() {
+      var hoge = "test test test";
+      console.log(hoge);
     }
-    function run() {
-      console.log("call run function");
+    function func2() {
+      var hoge = "hogehoge";
+      console.log(hoge, "fooooooo");
     }
-    console.log("hoge1", "hoge");
+    
+    var demoLogger = new DemoLogger();
     demoLogger.set({
-      test: test,
-      run: run
+      "function name": func1,
+      "すごいメソッド": func2
     });
   </script>
 </body>
