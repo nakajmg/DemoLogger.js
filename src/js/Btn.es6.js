@@ -15,7 +15,8 @@ class Btn extends Elem {
       fontSize: '14px',
       webkitAppearance: 'none',
       boxShadow: 'inset 0 -1px 0 0 rgba(255,255,255,.2)',
-      margin: '0'
+      margin: '0',
+      cursor: 'pointer'
     };
     
     super(opt);
