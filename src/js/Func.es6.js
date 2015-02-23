@@ -32,7 +32,7 @@ class Func extends Elem {
       this.code
     ]);
     this.btn.el.addEventListener('click', () => {
-      this.code.toggle();
+      this.code.show();
     }.bind(this));
   }
   _toString() {
