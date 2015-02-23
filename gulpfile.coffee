@@ -26,6 +26,7 @@ order = [
     "Code"
     "Btn"
     "CodeBtn"
+    "CodeCloseBtn"
     "Label"
     "FuncLabel"
     "Log"
