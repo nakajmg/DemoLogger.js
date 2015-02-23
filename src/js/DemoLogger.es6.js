@@ -37,4 +37,4 @@ class DemoLogger {
   }
 }
 
-window.demoLogger = new DemoLogger();
+window.DemoLogger = DemoLogger;
