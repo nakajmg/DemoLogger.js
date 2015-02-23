@@ -2,6 +2,7 @@ class Func extends Elem {
   constructor(opt = {}) {
     this.fn = opt.fn;
     this.text = opt.text;
+    opt.el = 'func';
     opt.text = '';
     opt.style = {
       boxShadow: 'none',
@@ -9,36 +10,32 @@ class Func extends Elem {
       padding: '5px'
     }
     super(opt);
-    this._setEvent();
-    this._setCode();
+    this._initElement();
   }
-  _setEvent() {
+  _initElement() {
+    this.btn = new CodeBtn();
+    this.code = new Code({
+      text: this._toString()
+    });
+    
     this.add([
       new FuncLabel({
         text: this.text
       }),
       new Btn({
+        name: this.text,
         events: {
           click: this.fn
         }
       }),
-      new CodeBtn({
-        events: {
-          click: function() {
-            this.code.toggle();
-          }.bind(this)
-        }
-      })
-    ])
-  }
-  _setCode() {
-    this.code = new Code({
-      text: this._toString()
-    });
-    this.add(this.code);
+      this.btn,
+      this.code
+    ]);
+    this.btn.el.addEventListener('click', () => {
+      this.code.toggle();
+    }.bind(this));
   }
   _toString() {
-    // return this.fn.toString();
     var codestring = this.fn.toString().split('\n');
     codestring.splice(-1, 1);
     codestring.splice(0, 1);

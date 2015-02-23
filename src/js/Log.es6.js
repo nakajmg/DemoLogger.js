@@ -16,6 +16,5 @@ class Log extends Elem {
     
     super(opt);
     replacelog(this.el);
-    console.log('console.log');
   }
 }
