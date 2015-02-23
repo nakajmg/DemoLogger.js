@@ -1,5 +1,7 @@
 var replacelog = (el) => {
+  var _log = console.log;
   console.log = (...args) => {
+    _log.apply(console, args);
     var logs = [];
     for (var i = 0, leng = args.length; i < leng; i++) {
       if (typeof args[i] == 'object') {
@@ -18,6 +20,7 @@ class Elem {
   constructor(opt = {}) {
     opt.el = opt.el ? `${PRE}${opt.el}` : `${PRE}div`;
     this.opt = opt;
+    this.name = opt.name || '';
     this.style = opt.style || {};
     this.events = opt.events || {};
     this._initialize();
@@ -30,7 +33,6 @@ class Elem {
   _setElement() {
     this.el = document.createElement(this.opt.el);
     this.el.textContent = this.opt.text || '';
-    this.el.id = this.opt.id || '';
     this.el.style.display = 'block';
   }
   mount(selector) {
@@ -51,7 +53,15 @@ class Elem {
     }
   }
   addEvent(eventName, cb) {
-    this.el.addEventListener(eventName, cb, false);
+    this.el.addEventListener(eventName, () => {
+      console.log(`> run ${this.name}`);
+      try {
+        cb();
+      }
+      catch(err) {
+        console.log(err.message);
+      }
+    }, false);
   }
   add(els) {
     if (els.length) {
@@ -69,8 +79,7 @@ class Frame extends Elem {
   constructor(opt = {}) {
     opt.el = 'frame'
     opt.style = {
-      // border: '1px solid #333',
-      backgroundColor: '#eee',
+      backgroundColor: '#f9faf9',
       padding: '5px',
       borderRadius: '1px',
       boxShadow: 'inset 1px 1px 0 rgba(0,0,0,.2)'
@@ -80,25 +89,158 @@ class Frame extends Elem {
   }
 }
 
+class Func extends Elem {
+  constructor(opt = {}) {
+    this.fn = opt.fn;
+    this.text = opt.text;
+    opt.el = 'func';
+    opt.text = '';
+    opt.style = {
+      boxShadow: 'none',
+      borderBottom: '1px dashed rgba(0,0,0,.2)',
+      padding: '5px'
+    }
+    super(opt);
+    this._initElement();
+  }
+  _initElement() {
+    this.btn = new CodeBtn();
+    this.code = new Code({
+      text: this._toString()
+    });
+    
+    this.add([
+      new FuncLabel({
+        text: this.text
+      }),
+      new Btn({
+        name: this.text,
+        events: {
+          click: this.fn
+        }
+      }),
+      this.btn,
+      this.code
+    ]);
+    this.btn.el.addEventListener('click', () => {
+      this.code.show();
+    }.bind(this));
+  }
+  _toString() {
+    var codestring = this.fn.toString().split('\n');
+    codestring.splice(-1, 1);
+    codestring.splice(0, 1);
+    var firstIndent = codestring[0].match(/^\s*/)[0];
+    var reg = new RegExp(`\^${firstIndent}`);
+    for(var i = 0, leng = codestring.length; i < leng; i++) {
+      codestring[0] = codestring[0].replace(reg, '');
+    }
+    
+    return codestring.join('\n');
+  }
+}
+
+class Code extends Elem {
+  constructor(opt = {}) {
+    opt.el = 'code';
+    opt.style = {
+      display: 'block',
+      padding: '5px',
+      backgroundColor: 'rgb(226, 241, 224)',
+      color: 'rgb(30, 30, 30)',
+      margin: '0',
+      whiteSpace: 'pre',
+      overflowX: 'scroll',
+      fontSize: '12px',
+      fontFamily: 'monospace',
+      letterSpacing: '0.1em',
+      position: 'relative'
+    }
+    super(opt);
+    this._initElement();
+  }
+  _initElement() {
+    this.close = new CodeCloseBtn({
+      fn: this.hide.bind(this)
+    });
+    this.add([this.close]);
+  }
+  show() {
+    this.el.style.display = 'block';
+  }
+  hide() {
+    this.el.style.display = 'none';
+  }
+  isShow() {
+    return this.el.style.display == 'block';
+  }
+  toggle() {
+    this.isShow() ? this.hide() : this.show();
+  }
+}
+
 class Btn extends Elem {
   constructor(opt = {}) {
     opt.el = 'button';
+    opt.text = opt.text || 'run';
     opt.style = {
       textAlign: 'center',
       color: '#fff',
       display: 'inline-block',
-      backgroundColor: '#333',
-      border: '1px solid #222',
+      // backgroundColor: '#C7243A',
+      backgroundColor: 'rgb(51, 51, 51)',
+      border: 'none',
       borderRadius: '1px',
       padding: '0 10px',
       lineHeight: '26px',
       fontSize: '14px',
       webkitAppearance: 'none',
       boxShadow: 'inset 0 -1px 0 0 rgba(255,255,255,.2)',
-      margin: '3px 3px 0 0'
+      margin: '0',
+      cursor: 'pointer'
     };
     
     super(opt);
+  }
+}
+
+class CodeBtn extends Btn {
+  constructor(opt = {}) {
+    opt.el = 'codebutton';
+    opt.text = 'code';
+    super(opt);
+    this.style = {
+      backgroundColor: '#23AC0E'
+    };
+    this.applyStyle();
+  }
+}
+
+class CodeCloseBtn extends Btn {
+  constructor(opt = {}) {
+    opt.el = 'codeclosebutton';
+    opt.text = 'close';
+    
+    super(opt);
+    this.fn = opt.fn;
+    
+    this.style = {
+      backgroundColor: 'rgb(17, 108, 0)',
+      position: 'absolute',
+      right: '0px',
+      top: '0px',
+      fontSize: '10px',
+      opacity: '0.5',
+      padding: '0 5px',
+      lineHeight: '20px'
+    };
+    this.applyStyle();
+    this._addEvent();
+  }
+  _addEvent() {
+    this.el.addEventListener('click', () =>{
+      this.fn();
+    })
   }
 }
 
@@ -107,9 +249,8 @@ class Label extends Elem {
     opt.text = opt.text || 'label';
     opt.el = 'label';
     opt.style = {
-      fontSize: '10px',
+      fontSize: '12px',
       color: '#9f9f9f',
-      borderBottom: '1px solid #9f9f9f',
       textShadow: '-1px -1px rgba(255,255,255, .2)',
       margin: '8px 0 5px'
     };
@@ -118,7 +259,19 @@ class Label extends Elem {
   }
 }
 
-class Logger extends Elem {
+class FuncLabel extends Label {
+  constructor(opt = {}) {
+    super(opt);
+    this.style = {
+      margin: '0 0 5px',
+      fontSize: '12px',
+      color: 'rgb(51, 51, 51)'
+    };
+    this.applyStyle();
+  }
+}
+
+class Log extends Elem {
   constructor(opt = {}) {
     opt.el = 'log';
     opt.style = {
@@ -139,45 +292,60 @@ class Logger extends Elem {
   }
 }
 
-class DemoLogger {
-  constructor(config = {}, mount) {
-    this.config = config;
-    this._initialize(mount);
+class Logger extends Elem {
+  constructor(opt = {}) {
+    opt.el = 'logger';
+    opt.style = {
+      padding: '5px'
+    }
+    
+    super(opt);
+    this._initElement();
   }
-  _initialize(mount) {
+  _initElement() {
+    this.label = new Label({text: 'console.log'});
+    this.log = new Log();
+    this.add([this.label, new Log()]);
+  }
+}
+
+class DemoLogger {
+  constructor(config = {}, opt = {}) {
+    this.config = config;
+    this.opt = opt;
+    this._initialize();
+  }
+  _initialize(opt) {
     this._setElement();
-    this._createBtns(this.config);
-    if (!mount) {
+    this._setFunc(this.config);
+    if (!this.opt.mount) {
       this.mount('body');
     }
   }
   _setElement() {
     this.frame = new Frame();
-    this.btns = new Elem({ el: 'btns'});
-    this.label = new Label({ text: 'console.log'});
+    this.fns = new Elem({el: 'funcs'});
     this.logger = new Logger();
-    this.frame.add([this.btns, this.label, this.logger]);
+    this.frame.add([this.fns, this.logger]);
   }
   mount(selector) {
     document.querySelector(selector).appendChild(this.frame.el);
   }
   set(config) {
-    this._createBtns(config);
+    this._setFunc(config);
   }
-  _createBtns(config) {
+  _setFunc(config) {
     for(var fn in config) {
       if (config.hasOwnProperty(fn)) {
-        this.btns.add(
-          new Btn({
+        this.fns.add([
+          new Func({
             text: fn,
-            events: {
-              click: config[fn]
-            }
+            fn: config[fn]
           })
-        );
+        ]);
       }
     }
   }
 }
 
-window.demoLogger = new DemoLogger();
+window.DemoLogger = DemoLogger;

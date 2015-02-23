@@ -3,6 +3,7 @@ class Elem {
   constructor(opt = {}) {
     opt.el = opt.el ? `${PRE}${opt.el}` : `${PRE}div`;
     this.opt = opt;
+    this.name = opt.name || '';
     this.style = opt.style || {};
     this.events = opt.events || {};
     this._initialize();
@@ -15,7 +16,6 @@ class Elem {
   _setElement() {
     this.el = document.createElement(this.opt.el);
     this.el.textContent = this.opt.text || '';
-    this.el.id = this.opt.id || '';
     this.el.style.display = 'block';
   }
   mount(selector) {
@@ -36,7 +36,15 @@ class Elem {
     }
   }
   addEvent(eventName, cb) {
-    this.el.addEventListener(eventName, cb, false);
+    this.el.addEventListener(eventName, () => {
+      console.log(`> run ${this.name}`);
+      try {
+        cb();
+      }
+      catch(err) {
+        console.log(err.message);
+      }
+    }, false);
   }
   add(els) {
     if (els.length) {

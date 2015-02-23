@@ -1,42 +1,40 @@
 class DemoLogger {
-  constructor(config = {}, mount) {
+  constructor(config = {}, opt = {}) {
     this.config = config;
-    this._initialize(mount);
+    this.opt = opt;
+    this._initialize();
   }
-  _initialize(mount) {
+  _initialize(opt) {
     this._setElement();
-    this._createBtns(this.config);
-    if (!mount) {
+    this._setFunc(this.config);
+    if (!this.opt.mount) {
       this.mount('body');
     }
   }
   _setElement() {
     this.frame = new Frame();
-    this.btns = new Elem({ el: 'btns'});
-    this.label = new Label({ text: 'console.log'});
+    this.fns = new Elem({el: 'funcs'});
     this.logger = new Logger();
-    this.frame.add([this.btns, this.label, this.logger]);
+    this.frame.add([this.fns, this.logger]);
   }
   mount(selector) {
     document.querySelector(selector).appendChild(this.frame.el);
   }
   set(config) {
-    this._createBtns(config);
+    this._setFunc(config);
   }
-  _createBtns(config) {
+  _setFunc(config) {
     for(var fn in config) {
       if (config.hasOwnProperty(fn)) {
-        this.btns.add(
-          new Btn({
+        this.fns.add([
+          new Func({
             text: fn,
-            events: {
-              click: config[fn]
-            }
+            fn: config[fn]
           })
-        );
+        ]);
       }
     }
   }
 }
 
-window.demoLogger = new DemoLogger();
+window.DemoLogger = DemoLogger;
