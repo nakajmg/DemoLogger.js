@@ -22,8 +22,13 @@ order = [
     "replacelog"
     "Elem"
     "Frame"
+    "Func"
+    "Code"
     "Btn"
+    "CodeBtn"
     "Label"
+    "FuncLabel"
+    "Log"
     "Logger"
     "DemoLogger"
   ].map (filename) ->
@@ -42,13 +47,13 @@ gulp.task "babel", ["concat"], ->
     .pipe plumber {errorHandler: notify.onError("<%= error.message %>") }
     .pipe babel({ blacklist: ["useStrict"] })
     .pipe rename "#{name.js}"
-    .pipe wrapper
-      header: "(function() {\n"
-      footer: "\n})();"
     .pipe gulp.dest dist
 
 gulp.task "build", ["babel"], ->
   gulp.src "#{dist}#{name.js}"
+    .pipe wrapper
+      header: "(function() {\n"
+      footer: "\n})();"
     .pipe do uglify
     .pipe rename name.min
     .pipe gulp.dest dist
