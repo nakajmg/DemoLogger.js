@@ -2,11 +2,10 @@ class Code extends Elem {
   constructor(opt = {}) {
     opt.el = 'code';
     opt.style = {
-      display: 'none',
-      border: '1px solid #333',
+      display: 'block',
       padding: '5px',
-      backgroundColor: '#333',
-      color: '#fff',
+      backgroundColor: 'rgb(226, 241, 224)',
+      color: 'rgb(30, 30, 30)',
       margin: '0',
       whiteSpace: 'pre',
       overflowX: 'scroll',
