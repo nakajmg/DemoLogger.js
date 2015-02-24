@@ -1,5 +1,5 @@
 # DemoLogger.js
-Replace console.log output to HTML
+Replace console.log, console.warn, console.error output to HTML
 
 [demo](https://nakajmg.github.io/DemoLogger.js/dist/)
 
@@ -21,12 +21,13 @@ use `set` method
 ```js
 demologger.set({
   'function name': function() {
-    console.log("hogehoge");
+    console.log("log");
   },
   'hoge': hoge
 });
 
 function hoge() {
-  console.log("hoge");
+  console.warn("warn");
+  console.error("error");
 }
 ```
