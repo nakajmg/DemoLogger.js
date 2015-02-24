@@ -129,7 +129,8 @@ class Frame extends Elem {
       backgroundColor: '#f9faf9',
       padding: '5px',
       borderRadius: '1px',
-      boxShadow: 'inset 1px 1px 0 rgba(0,0,0,.2)'
+      boxShadow: 'inset 1px 1px 0 rgba(0,0,0,.2)',
+      marginTop: '10px'
     };
     
     super(opt);
