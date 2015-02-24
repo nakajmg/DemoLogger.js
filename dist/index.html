@@ -15,19 +15,33 @@
 <body>
   <script src="js/demologger.js"></script>
   <script>
-    function func1() {
-      var hoge = "test test test";
-      console.log(hoge);
-    }
-    function func2() {
-      var hoge = "hogehoge";
-      console.log(hoge, "fooooooo");
-    }
+    var data = {
+      "hoge": "hoge",
+      "hogehoge": {
+        "fugafuga": 1
+      }
+    };
+function func1() {
+console.log('this is console.log');
+console.log(data);
+console.log(undefined);
+}
+function func2() {
+console.warn('this is console.warn');
+console.warn(data);
+console.warn(undefined);
+}
+function func3() {
+console.error('this is console.error');
+console.error(data);
+console.error(undefined);
+}
     
     var demoLogger = new DemoLogger();
     demoLogger.set({
-      "function name": func1,
-      "すごいメソッド": func2
+      "console.log": func1,
+      "console.warn": func2,
+      "console.error": func3
     });
   </script>
 </body>

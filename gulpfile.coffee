@@ -68,3 +68,6 @@ gulp.task "default", ->
     host: "localhost"
   
   gulp.watch ["src/js/**/*.es6.js", "!#{src.js}#{name.es6}"], ["babel", bs.reload]
+  gulp.watch ["dist/index.html"], bs.reload
+
+gulp.task "watch", ["default"]

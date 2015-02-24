@@ -6,15 +6,19 @@ class Log extends Elem {
       padding: '5px 7px',
       backgroundColor: '#333',
       lineHeight: '1.5',
-      fontSize: '13px',
+      fontSize: '12px',
       fontFamily: '"Ubuntu Mono", sans-serif',
       border: '1px solid #000',
       borderRadius: '2px',
       margin: '0',
-      minHeight: '19px'
+      minHeight: '19px',
+      whiteSpace: 'pre',
+      letterSpacing: '0.1em'
     };
     
     super(opt);
     replacelog(this.el);
+    replacewarn(this.el);
+    replaceerror(this.el);
   }
 }
