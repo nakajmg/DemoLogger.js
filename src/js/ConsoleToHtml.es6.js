@@ -4,8 +4,7 @@ class ConsoleToHtml {
     opt.color = opt.color || {};
     
     this.types = ['log', 'warn', 'error'];
-    
-    this.el = opt.el || document.body;
+    this.el = opt.output || document.body;
     this.enables = {
       log:   true,
       warn:  true,
