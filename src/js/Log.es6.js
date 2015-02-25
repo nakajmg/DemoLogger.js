@@ -1,5 +1,7 @@
 class Log extends Elem {
-  constructor(opt = {}) {
+  constructor(config) {
+    this.config = config;
+    var opt = {};
     opt.el = 'console';
     opt.style = {
       color: '#15df30',
@@ -17,11 +19,11 @@ class Log extends Elem {
     };
     
     super(opt);
-    new ConsoleToHtml({
-      el: this.el,
-      log: opt.log,
-      warn: opt.warn,
-      error: opt.error
-    });
+    this._consolify();
+  }
+  
+  _consolify() {
+    this.config.output = this.config.output || this.el;
+    new ConsoleToHtml(this.config);
   }
 }
