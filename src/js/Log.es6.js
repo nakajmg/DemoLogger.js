@@ -1,6 +1,6 @@
 class Log extends Elem {
   constructor(opt = {}) {
-    opt.el = 'log';
+    opt.el = 'console';
     opt.style = {
       color: '#15df30',
       padding: '5px 7px',
