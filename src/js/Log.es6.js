@@ -1,4 +1,7 @@
-class Log extends Elem {
+import Elem from './Elem'
+import ConsoleToHtml from './ConsoleToHtml'
+
+export default class Log extends Elem {
   constructor(config) {
     this.config = config;
     var opt = {};

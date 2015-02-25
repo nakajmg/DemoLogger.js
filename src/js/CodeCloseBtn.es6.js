@@ -1,4 +1,6 @@
-class CodeCloseBtn extends Btn {
+import Btn from './Btn'
+
+export default class CodeCloseBtn extends Btn {
   constructor(opt = {}) {
     opt.el = 'codeclosebutton';
     opt.text = 'close';

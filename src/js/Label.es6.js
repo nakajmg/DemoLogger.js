@@ -1,4 +1,6 @@
-class Label extends Elem {
+import Elem from './Elem'
+
+export default class Label extends Elem {
   constructor(opt = {}) {
     opt.text = opt.text || 'label';
     opt.el = 'label';

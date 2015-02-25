@@ -1,4 +1,8 @@
-class Logger extends Elem {
+import Elem from './Elem'
+import Label from './Label'
+import Log from './Log'
+
+export default class Logger extends Elem {
   constructor(config, opt = {}) {
     this.config = config;
     opt.el = 'logger';
