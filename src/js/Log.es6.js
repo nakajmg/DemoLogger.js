@@ -17,8 +17,11 @@ class Log extends Elem {
     };
     
     super(opt);
-    replacelog(this.el);
-    replacewarn(this.el);
-    replaceerror(this.el);
+    new ConsoleToHtml({
+      el: this.el,
+      log: opt.log,
+      warn: opt.warn,
+      error: opt.error
+    });
   }
 }
