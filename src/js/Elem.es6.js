@@ -1,5 +1,5 @@
 var PRE = 'dl-';
-class Elem {
+export default class Elem {
   constructor(opt = {}) {
     opt.el = opt.el ? `${PRE}${opt.el}` : `${PRE}div`;
     this.opt = opt;

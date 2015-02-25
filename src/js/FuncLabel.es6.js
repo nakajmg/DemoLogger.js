@@ -1,4 +1,6 @@
-class FuncLabel extends Label {
+import Label from './Label'
+
+export default class FuncLabel extends Label {
   constructor(opt = {}) {
     super(opt);
     this.style = {

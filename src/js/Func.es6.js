@@ -1,4 +1,10 @@
-class Func extends Elem {
+import Elem from './Elem'
+import CodeBtn from './CodeBtn'
+import Code from './Code'
+import FuncLabel from './FuncLabel'
+import Btn from './Btn'
+
+export default class Func extends Elem {
   constructor(opt = {}) {
     this.fn = opt.fn;
     this.text = opt.text;

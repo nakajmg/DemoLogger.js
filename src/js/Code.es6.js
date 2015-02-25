@@ -1,4 +1,7 @@
-class Code extends Elem {
+import Elem from './Elem'
+import CodeCloseBtn from './CodeCloseBtn'
+
+export default class Code extends Elem {
   constructor(opt = {}) {
     opt.el = 'code';
     opt.style = {

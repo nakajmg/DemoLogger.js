@@ -1,4 +1,6 @@
-class CodeBtn extends Btn {
+import Btn from './Btn'
+
+export default class CodeBtn extends Btn {
   constructor(opt = {}) {
     opt.el = 'codebutton';
     opt.text = 'code';
