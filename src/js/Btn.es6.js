@@ -1,4 +1,6 @@
-class Btn extends Elem {
+import Elem from './Elem'
+
+export default class Btn extends Elem {
   constructor(opt = {}) {
     opt.el = 'button';
     opt.text = opt.text || 'run';

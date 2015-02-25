@@ -1,5 +1,6 @@
 var PRE = 'dl-';
-class ConsoleToHtml {
+
+export default class ConsoleToHtml {
   constructor(opt = {}) {
     opt.color = opt.color || {};
     

@@ -1,4 +1,6 @@
-class Frame extends Elem {
+import Elem from './Elem'
+
+export default class Frame extends Elem {
   constructor(opt = {}) {
     opt.el = 'frame'
     opt.style = {

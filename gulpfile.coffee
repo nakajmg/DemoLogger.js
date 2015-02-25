@@ -19,25 +19,25 @@ name =
   js: "demologger.js"
   min: "demologger.min.js"
 
-gulp.task "build", ["babelify"] ->
+gulp.task "build", ["babelify"], ->
   gulp.src "#{dist}#{name.js}"
-    .pipe source name.js
-    .pipe do buffer
     .pipe do uglify
     .pipe rename name.min
     .pipe gulp.dest dist
   
 gulp.task "babelify", ->
-  browserify
-    debug: true
+  browserify({
+    # debug: true
     extensions: [".es6.js"]
     standalone: "DemoLogger"
-  .transform babelify.configure blacklist:["userStrict"]
-  .require src, entry: true
+  })
+  .transform babelify.configure ({ blacklist: ["useStrict"] })
+  .require(src, entry: true)
   .bundle()
   .on "error", (err) ->
     console.log "Error: #{err.message}"
     @emit "end"
+  .pipe source name.js
   .pipe gulp.dest dist
     
 gulp.task "default", ->
