@@ -1,66 +1,71 @@
-var replacelog = (el) => {
-  var _log = console.log;
-  console.log = (...args) => {
-    _log.apply(console, args);
-    for (var i = 0, leng = args.length; i < leng; i++) {
-      if (typeof args[i] == 'object') {
-        el.appendChild(document.createTextNode(JSON.stringify(args[i], null, 2) + '\n'));
-      }
-      else if (typeof args[i] === 'undefined') {
-        el.appendChild(document.createTextNode('undefined \n'));
-      }
-      else {
-        el.appendChild(document.createTextNode(args[i] + '\n'));
-      }
-    }
-  }
-};
+var PRE = 'dl-';
+class ConsoleToHtml {
+  constructor(opt = {}) {
+    opt.color = opt.color || {};
+    
+    this.types = ['log', 'warn', 'error'];
+    this.el = opt.output || document.body;
+    this.enables = {
+      log:   true,
+      warn:  true,
+      error: true
+    };
+    
+    this.colors = {
+      log:   '',
+      warn:  'rgb(245, 228, 38)',
+      error: 'rgb(255, 52, 52)'
+    };
+    
+    this.types.forEach( (type) => {
+      this.enables[type] = opt[type] !== undefined ? opt[type] : this.enables[type];
+    });
+    
+    this.types.forEach( (type) => {
+      this.colors[type] = opt.color[type] ? opt.color[type] : this.colors[type];
+    });
 
-var replacewarn = (el) => {
-  var _warn = console.warn;
-  console.warn = (...args) => {
-    _warn.apply(console, args);
-    var wrap = document.createElement(`${PRE}warn`);
-    wrap.style.color = "rgb(245, 228, 38)";
-    
-    for (var i = 0, leng = args.length; i < leng; i++) {
-      if (typeof args[i] == 'object') {
-        wrap.appendChild(document.createTextNode(JSON.stringify(args[i], null, 2) + '\n'));
-      }
-      else if (typeof args[i] === 'undefined') {
-        wrap.appendChild(document.createTextNode('undefined \n'));
-      }
-      else {
-        wrap.appendChild(document.createTextNode(args[i] + '\n'));
-      }
-    }
-    
-    el.appendChild(wrap);
+    this._initialize();
   }
-};
-
-var replaceerror = (el) => {
-  var _error = console.error;
-  console.error = (...args) => {
-    _error.apply(console, args);
-    var wrap = document.createElement(`${PRE}warn`);
-    wrap.style.color = "rgb(255, 52, 52)";
-    
-    for (var i = 0, leng = args.length; i < leng; i++) {
-      if (typeof args[i] == 'object') {
-        wrap.appendChild(document.createTextNode(JSON.stringify(args[i], null, 2) + '\n'));
+  
+  _initialize() {
+    this.types.forEach( (type) => {
+      if (this.enables[type]) {
+        this._interrupt(type);
       }
-      else if (typeof args[i] === 'undefined') {
-        wrap.appendChild(document.createTextNode('undefined \n'));
-      }
-      else {
-        wrap.appendChild(document.createTextNode(args[i] + '\n'));
-      }
-    }
-    
-    el.appendChild(wrap);
+    });
   }
-};
+  
+  _interrupt(type) {
+    var _original = console[type];
+    
+    console[type] = (...args) => {
+      _original.apply(console, args);
+      
+      var wrapElement = document.createElement(`${PRE}${type}`);
+      wrapElement.style.color = this.colors[type];
+      
+      args.forEach( (message) => {
+          wrapElement.appendChild( this._convert(message) );
+        }.bind(this)
+      );
+      
+      this.el.appendChild(wrapElement);
+    }
+  }
+  
+  _convert(message) {
+    if (typeof message === 'object') {
+      return document.createTextNode( JSON.stringify(message, null, 2) + '\n' );
+    }
+    else if (typeof message === 'undefined') {
+      return document.createTextNode('undefined\n');
+    }
+    else {
+      return document.createTextNode(`${message}\n`);
+    }
+  }
+}
 
 var PRE = 'dl-';
 class Elem {
@@ -320,8 +325,10 @@ class FuncLabel extends Label {
 }
 
 class Log extends Elem {
-  constructor(opt = {}) {
-    opt.el = 'log';
+  constructor(config) {
+    this.config = config;
+    var opt = {};
+    opt.el = 'console';
     opt.style = {
       color: '#15df30',
       padding: '5px 7px',
@@ -338,26 +345,34 @@ class Log extends Elem {
     };
     
     super(opt);
-    replacelog(this.el);
-    replacewarn(this.el);
-    replaceerror(this.el);
+    this._consolify();
+  }
+  
+  _consolify() {
+    this.config.output = this.config.output || this.el;
+    new ConsoleToHtml(this.config);
   }
 }
 
 class Logger extends Elem {
-  constructor(opt = {}) {
+  constructor(config, opt = {}) {
+    this.config = config;
     opt.el = 'logger';
     opt.style = {
       padding: '5px'
     }
-    
     super(opt);
+    
+    if (this.config.logging === false || this.config.output !== undefined) {
+      this.el.style.display = 'none';
+    }
     this._initElement();
+
   }
   _initElement() {
-    this.label = new Label({text: 'console.log'});
-    this.log = new Log();
-    this.add([this.label, new Log()]);
+    this.label = new Label({text: 'console'});
+    this.log = new Log(this.config);
+    this.add([this.label, this.log]);
   }
 }
 
@@ -367,21 +382,27 @@ class DemoLogger {
     this.opt = opt;
     this._initialize();
   }
-  _initialize(opt) {
+  _initialize() {
     this._setElement();
-    this._setFunc(this.config);
-    if (!this.opt.mount) {
-      this.mount('body');
-    }
+    this._setFunc(this.opt.func);
+    this.mount(this.opt.mount);
   }
   _setElement() {
     this.frame = new Frame();
     this.fns = new Elem({el: 'funcs'});
-    this.logger = new Logger();
+    this.logger = new Logger(this.config);
     this.frame.add([this.fns, this.logger]);
   }
-  mount(selector) {
-    document.querySelector(selector).appendChild(this.frame.el);
+  mount(selector = 'body') {
+    if (selector.nodeType) {
+      this.mountTo(slector);
+    }
+    else{
+      this.mountTo(document.querySelector(selector));
+    }
+  }
+  mountTo(el) {
+    el.appendChild(this.frame.el);
   }
   set(config) {
     this._setFunc(config);
