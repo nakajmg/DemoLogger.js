@@ -22,26 +22,6 @@
         "fugafuga": 1
       }
     };
-function func() {
-console.log(data);
-console.warn(data);
-console.error(data);
-}
-function func1() {
-console.log('this is console.log');
-console.log(data);
-console.log(undefined);
-}
-function func2() {
-console.warn('this is console.warn');
-console.warn(data);
-console.warn(undefined);
-}
-function func3() {
-console.error('this is console.error');
-console.error(data);
-console.error(undefined);
-}
     
     var demoLogger = new DemoLogger(
       { 
@@ -58,15 +38,26 @@ console.error(undefined);
       }
       ,{
         // mount: '#app', // default: document.body
-        func: {
-          "test": function() {
+        'func': {
+          'log': function() {
             console.log(data);
+          },
+          'warn': function() {
             console.warn(data);
+          },
+          'error': function() {
             console.error(data);
           }
         }
       }
     );
+    
+    
+function func() {
+console.log(data);
+console.warn(data);
+console.error(data);
+}
     
     demoLogger.set({
       "log warn error": func
