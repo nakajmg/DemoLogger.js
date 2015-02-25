@@ -1,3 +1,4 @@
+var PRE = 'dl-';
 class ConsoleToHtml {
   constructor(opt = {}) {
     opt.color = opt.color || {};
