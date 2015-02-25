@@ -19,7 +19,8 @@ name =
   min: "demologger.min.js"
   
 order = [
-    "replacelog"
+    # "replacelog"
+    "ConsoleToHtml"
     "Elem"
     "Frame"
     "Func"
