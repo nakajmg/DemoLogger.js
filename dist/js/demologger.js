@@ -6,75 +6,100 @@ var _prototypeProperties = function (child, staticProps, instanceProps) { if (st
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-var replacelog = function (el) {
-  var _log = console.log;
-  console.log = function () {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
+var PRE = "dl-";
+
+var ConsoleToHtml = (function () {
+  function ConsoleToHtml() {
+    var _this = this;
+
+    var opt = arguments[0] === undefined ? {} : arguments[0];
+
+    _classCallCheck(this, ConsoleToHtml);
+
+    opt.color = opt.color || {};
+
+    this.types = ["log", "warn", "error"];
+    this.el = opt.output || document.body;
+    this.enables = {
+      log: true,
+      warn: true,
+      error: true
+    };
+
+    this.colors = {
+      log: "",
+      warn: "rgb(245, 228, 38)",
+      error: "rgb(255, 52, 52)"
+    };
+
+    this.types.forEach(function (type) {
+      _this.enables[type] = opt[type] !== undefined ? opt[type] : _this.enables[type];
+    });
+
+    this.types.forEach(function (type) {
+      _this.colors[type] = opt.color[type] ? opt.color[type] : _this.colors[type];
+    });
+
+    this._initialize();
+  }
+
+  _prototypeProperties(ConsoleToHtml, null, {
+    _initialize: {
+      value: function _initialize() {
+        var _this = this;
+
+        this.types.forEach(function (type) {
+          if (_this.enables[type]) {
+            _this._interrupt(type);
+          }
+        });
+      },
+      writable: true,
+      configurable: true
+    },
+    _interrupt: {
+      value: function _interrupt(type) {
+        var _this = this;
+
+        var _original = console[type];
+
+        console[type] = function () {
+          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _original.apply(console, args);
+
+          var wrapElement = document.createElement("" + PRE + "" + type);
+          wrapElement.style.color = _this.colors[type];
+
+          args.forEach((function (message) {
+            wrapElement.appendChild(_this._convert(message));
+          }).bind(_this));
+
+          _this.el.appendChild(wrapElement);
+        };
+      },
+      writable: true,
+      configurable: true
+    },
+    _convert: {
+      value: function _convert(message) {
+        if (typeof message === "object") {
+          return document.createTextNode(JSON.stringify(message, null, 2) + "\n");
+        } else if (typeof message === "undefined") {
+          return document.createTextNode("undefined\n");
+        } else {
+          return document.createTextNode("" + message + "\n");
+        }
+      },
+      writable: true,
+      configurable: true
     }
+  });
 
-    _log.apply(console, args);
-    for (var i = 0, leng = args.length; i < leng; i++) {
-      if (typeof args[i] == "object") {
-        el.appendChild(document.createTextNode(JSON.stringify(args[i], null, 2) + "\n"));
-      } else if (typeof args[i] === "undefined") {
-        el.appendChild(document.createTextNode("undefined \n"));
-      } else {
-        el.appendChild(document.createTextNode(args[i] + "\n"));
-      }
-    }
-  };
-};
-
-var replacewarn = function (el) {
-  var _warn = console.warn;
-  console.warn = function () {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _warn.apply(console, args);
-    var wrap = document.createElement("" + PRE + "warn");
-    wrap.style.color = "rgb(245, 228, 38)";
-
-    for (var i = 0, leng = args.length; i < leng; i++) {
-      if (typeof args[i] == "object") {
-        wrap.appendChild(document.createTextNode(JSON.stringify(args[i], null, 2) + "\n"));
-      } else if (typeof args[i] === "undefined") {
-        wrap.appendChild(document.createTextNode("undefined \n"));
-      } else {
-        wrap.appendChild(document.createTextNode(args[i] + "\n"));
-      }
-    }
-
-    el.appendChild(wrap);
-  };
-};
-
-var replaceerror = function (el) {
-  var _error = console.error;
-  console.error = function () {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _error.apply(console, args);
-    var wrap = document.createElement("" + PRE + "warn");
-    wrap.style.color = "rgb(255, 52, 52)";
-
-    for (var i = 0, leng = args.length; i < leng; i++) {
-      if (typeof args[i] == "object") {
-        wrap.appendChild(document.createTextNode(JSON.stringify(args[i], null, 2) + "\n"));
-      } else if (typeof args[i] === "undefined") {
-        wrap.appendChild(document.createTextNode("undefined \n"));
-      } else {
-        wrap.appendChild(document.createTextNode(args[i] + "\n"));
-      }
-    }
-
-    el.appendChild(wrap);
-  };
-};
+  return ConsoleToHtml;
+})();
 
 var PRE = "dl-";
 
@@ -476,12 +501,12 @@ var FuncLabel = (function (Label) {
 })(Label);
 
 var Log = (function (Elem) {
-  function Log() {
-    var opt = arguments[0] === undefined ? {} : arguments[0];
-
+  function Log(config) {
     _classCallCheck(this, Log);
 
-    opt.el = "log";
+    this.config = config;
+    var opt = {};
+    opt.el = "console";
     opt.style = {
       color: "#15df30",
       padding: "5px 7px",
@@ -498,28 +523,41 @@ var Log = (function (Elem) {
     };
 
     _get(Object.getPrototypeOf(Log.prototype), "constructor", this).call(this, opt);
-    replacelog(this.el);
-    replacewarn(this.el);
-    replaceerror(this.el);
+    this._consolify();
   }
 
   _inherits(Log, Elem);
+
+  _prototypeProperties(Log, null, {
+    _consolify: {
+      value: function _consolify() {
+        this.config.output = this.config.output || this.el;
+        new ConsoleToHtml(this.config);
+      },
+      writable: true,
+      configurable: true
+    }
+  });
 
   return Log;
 })(Elem);
 
 var Logger = (function (Elem) {
-  function Logger() {
-    var opt = arguments[0] === undefined ? {} : arguments[0];
+  function Logger(config) {
+    var opt = arguments[1] === undefined ? {} : arguments[1];
 
     _classCallCheck(this, Logger);
 
+    this.config = config;
     opt.el = "logger";
     opt.style = {
       padding: "5px"
     };
-
     _get(Object.getPrototypeOf(Logger.prototype), "constructor", this).call(this, opt);
+
+    if (this.config.logging === false || this.config.output !== undefined) {
+      this.el.style.display = "none";
+    }
     this._initElement();
   }
 
@@ -528,9 +566,9 @@ var Logger = (function (Elem) {
   _prototypeProperties(Logger, null, {
     _initElement: {
       value: function _initElement() {
-        this.label = new Label({ text: "console.log" });
-        this.log = new Log();
-        this.add([this.label, new Log()]);
+        this.label = new Label({ text: "console" });
+        this.log = new Log(this.config);
+        this.add([this.label, this.log]);
       },
       writable: true,
       configurable: true
@@ -554,12 +592,10 @@ var DemoLogger = (function () {
 
   _prototypeProperties(DemoLogger, null, {
     _initialize: {
-      value: function _initialize(opt) {
+      value: function _initialize() {
         this._setElement();
-        this._setFunc(this.config);
-        if (!this.opt.mount) {
-          this.mount("body");
-        }
+        this._setFunc(this.opt.func);
+        this.mount(this.opt.mount);
       },
       writable: true,
       configurable: true
@@ -568,15 +604,28 @@ var DemoLogger = (function () {
       value: function _setElement() {
         this.frame = new Frame();
         this.fns = new Elem({ el: "funcs" });
-        this.logger = new Logger();
+        this.logger = new Logger(this.config);
         this.frame.add([this.fns, this.logger]);
       },
       writable: true,
       configurable: true
     },
     mount: {
-      value: function mount(selector) {
-        document.querySelector(selector).appendChild(this.frame.el);
+      value: function mount() {
+        var selector = arguments[0] === undefined ? "body" : arguments[0];
+
+        if (selector.nodeType) {
+          this.mountTo(slector);
+        } else {
+          this.mountTo(document.querySelector(selector));
+        }
+      },
+      writable: true,
+      configurable: true
+    },
+    mountTo: {
+      value: function mountTo(el) {
+        el.appendChild(this.frame.el);
       },
       writable: true,
       configurable: true

@@ -1,16 +1,21 @@
 class Logger extends Elem {
-  constructor(opt = {}) {
+  constructor(config, opt = {}) {
+    this.config = config;
     opt.el = 'logger';
     opt.style = {
       padding: '5px'
     }
-    
     super(opt);
+    
+    if (this.config.logging === false || this.config.output !== undefined) {
+      this.el.style.display = 'none';
+    }
     this._initElement();
+
   }
   _initElement() {
-    this.label = new Label({text: 'console.log'});
-    this.log = new Log();
-    this.add([this.label, new Log()]);
+    this.label = new Label({text: 'console'});
+    this.log = new Log(this.config);
+    this.add([this.label, this.log]);
   }
 }

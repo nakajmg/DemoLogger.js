@@ -4,21 +4,27 @@ class DemoLogger {
     this.opt = opt;
     this._initialize();
   }
-  _initialize(opt) {
+  _initialize() {
     this._setElement();
-    this._setFunc(this.config);
-    if (!this.opt.mount) {
-      this.mount('body');
-    }
+    this._setFunc(this.opt.func);
+    this.mount(this.opt.mount);
   }
   _setElement() {
     this.frame = new Frame();
     this.fns = new Elem({el: 'funcs'});
-    this.logger = new Logger();
+    this.logger = new Logger(this.config);
     this.frame.add([this.fns, this.logger]);
   }
-  mount(selector) {
-    document.querySelector(selector).appendChild(this.frame.el);
+  mount(selector = 'body') {
+    if (selector.nodeType) {
+      this.mountTo(slector);
+    }
+    else{
+      this.mountTo(document.querySelector(selector));
+    }
+  }
+  mountTo(el) {
+    el.appendChild(this.frame.el);
   }
   set(config) {
     this._setFunc(config);

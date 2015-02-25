@@ -1,6 +1,8 @@
 class Log extends Elem {
-  constructor(opt = {}) {
-    opt.el = 'log';
+  constructor(config) {
+    this.config = config;
+    var opt = {};
+    opt.el = 'console';
     opt.style = {
       color: '#15df30',
       padding: '5px 7px',
@@ -17,8 +19,11 @@ class Log extends Elem {
     };
     
     super(opt);
-    replacelog(this.el);
-    replacewarn(this.el);
-    replaceerror(this.el);
+    this._consolify();
+  }
+  
+  _consolify() {
+    this.config.output = this.config.output || this.el;
+    new ConsoleToHtml(this.config);
   }
 }
