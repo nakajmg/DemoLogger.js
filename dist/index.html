@@ -13,6 +13,7 @@
   </style>
 </head>
 <body>
+  <div id="app"></div>
   <script src="js/demologger.js"></script>
   <script>
     var data = {
@@ -21,6 +22,11 @@
         "fugafuga": 1
       }
     };
+function func() {
+console.log(data);
+console.warn(data);
+console.error(data);
+}
 function func1() {
 console.log('this is console.log');
 console.log(data);
@@ -37,11 +43,33 @@ console.error(data);
 console.error(undefined);
 }
     
-    var demoLogger = new DemoLogger();
+    var demoLogger = new DemoLogger(
+      { 
+        // output: document.querySelector('#app'), // default: dl-console
+        // logging: false, // default: true
+        log:   true,   // default: true
+        warn:  true,   // default: true
+        error: true,  // default: true
+        color: {
+          log:   '',                  // default: ''
+          warn:  'rgb(245, 228, 38)', // default: 'rgb(245, 228, 38)'
+          error: 'rgb(255, 52, 52)'   // default: 'rgb(255, 52, 52)'
+        }
+      }
+      ,{
+        // mount: '#app', // default: document.body
+        func: {
+          "test": function() {
+            console.log(data);
+            console.warn(data);
+            console.error(data);
+          }
+        }
+      }
+    );
+    
     demoLogger.set({
-      "console.log": func1,
-      "console.warn": func2,
-      "console.error": func3
+      "log warn error": func
     });
   </script>
 </body>
